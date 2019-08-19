@@ -1,10 +1,10 @@
-import {CsvFileReader} from "./CsvFileReader";
 import path from "path";
+import {MatchReader} from "./MatchReader";
 import {MatchResult} from "./MatchResult";
 
 const fileName = path.resolve(__dirname, '..', 'football.csv');
 
-const reader = new CsvFileReader(fileName);
+const reader = new MatchReader(fileName);
 reader.read();
 
 let manUnitedWins = 0;

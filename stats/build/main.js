@@ -94,7 +94,19 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst utils_1 = __webpack_require__(/*! ./utils */ \"./stats/src/utils.ts\");\r\nconst fs_1 = __importDefault(__webpack_require__(/*! fs */ \"fs\"));\r\nclass CsvFileReader {\r\n    constructor(fileName) {\r\n        this.fileName = fileName;\r\n        this.data = [];\r\n    }\r\n    read() {\r\n        this.data = fs_1.default.readFileSync(this.fileName, {\r\n            encoding: 'utf8'\r\n        })\r\n            .split('\\n')\r\n            .map((row) => {\r\n            return row.split(',');\r\n        }).map((row) => {\r\n            return [\r\n                utils_1.dateStringToDate(row[0]),\r\n                row[1],\r\n                row[2],\r\n                parseInt(row[3]),\r\n                parseInt(row[4]),\r\n                row[5],\r\n                row[6]\r\n            ];\r\n        });\r\n    }\r\n}\r\nexports.CsvFileReader = CsvFileReader;\r\n\n\n//# sourceURL=webpack:///./stats/src/CsvFileReader.ts?");
+eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst fs_1 = __importDefault(__webpack_require__(/*! fs */ \"fs\"));\r\nclass CsvFileReader {\r\n    constructor(fileName) {\r\n        this.fileName = fileName;\r\n        this.data = [];\r\n    }\r\n    read() {\r\n        this.data = fs_1.default.readFileSync(this.fileName, {\r\n            encoding: 'utf8'\r\n        })\r\n            .split('\\n')\r\n            .map((row) => {\r\n            return row.split(',');\r\n        }).map(this.mapRow);\r\n    }\r\n}\r\nexports.CsvFileReader = CsvFileReader;\r\n\n\n//# sourceURL=webpack:///./stats/src/CsvFileReader.ts?");
+
+/***/ }),
+
+/***/ "./stats/src/MatchReader.ts":
+/*!**********************************!*\
+  !*** ./stats/src/MatchReader.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst CsvFileReader_1 = __webpack_require__(/*! ./CsvFileReader */ \"./stats/src/CsvFileReader.ts\");\r\nconst utils_1 = __webpack_require__(/*! ./utils */ \"./stats/src/utils.ts\");\r\nclass MatchReader extends CsvFileReader_1.CsvFileReader {\r\n    mapRow(row) {\r\n        return [\r\n            utils_1.dateStringToDate(row[0]),\r\n            row[1],\r\n            row[2],\r\n            parseInt(row[3]),\r\n            parseInt(row[4]),\r\n            row[5],\r\n            row[6]\r\n        ];\r\n    }\r\n}\r\nexports.MatchReader = MatchReader;\r\n\n\n//# sourceURL=webpack:///./stats/src/MatchReader.ts?");
 
 /***/ }),
 
@@ -118,7 +130,7 @@ eval("\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nva
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst CsvFileReader_1 = __webpack_require__(/*! ./CsvFileReader */ \"./stats/src/CsvFileReader.ts\");\r\nconst path_1 = __importDefault(__webpack_require__(/*! path */ \"path\"));\r\nconst MatchResult_1 = __webpack_require__(/*! ./MatchResult */ \"./stats/src/MatchResult.ts\");\r\nconst fileName = path_1.default.resolve(__dirname, '..', 'football.csv');\r\nconst reader = new CsvFileReader_1.CsvFileReader(fileName);\r\nreader.read();\r\nlet manUnitedWins = 0;\r\nfor (const match of reader.data) {\r\n    if (match[1] === 'Man United' && match[5] === MatchResult_1.MatchResult.HomeWin) {\r\n        manUnitedWins++;\r\n    }\r\n    else {\r\n        if (match[2] === 'Man United' && match[5] === MatchResult_1.MatchResult.AwayWin) {\r\n            manUnitedWins++;\r\n        }\r\n    }\r\n}\r\nconsole.log(`Man United won ${manUnitedWins} games`);\r\n\n\n//# sourceURL=webpack:///./stats/src/index.ts?");
+eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst path_1 = __importDefault(__webpack_require__(/*! path */ \"path\"));\r\nconst MatchReader_1 = __webpack_require__(/*! ./MatchReader */ \"./stats/src/MatchReader.ts\");\r\nconst MatchResult_1 = __webpack_require__(/*! ./MatchResult */ \"./stats/src/MatchResult.ts\");\r\nconst fileName = path_1.default.resolve(__dirname, '..', 'football.csv');\r\nconst reader = new MatchReader_1.MatchReader(fileName);\r\nreader.read();\r\nlet manUnitedWins = 0;\r\nfor (const match of reader.data) {\r\n    if (match[1] === 'Man United' && match[5] === MatchResult_1.MatchResult.HomeWin) {\r\n        manUnitedWins++;\r\n    }\r\n    else {\r\n        if (match[2] === 'Man United' && match[5] === MatchResult_1.MatchResult.AwayWin) {\r\n            manUnitedWins++;\r\n        }\r\n    }\r\n}\r\nconsole.log(`Man United won ${manUnitedWins} games`);\r\n\n\n//# sourceURL=webpack:///./stats/src/index.ts?");
 
 /***/ }),
 
