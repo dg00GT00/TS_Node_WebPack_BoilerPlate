@@ -94,7 +94,19 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst utils_1 = __webpack_require__(/*! ./utils */ \"./stats/src/utils.ts\");\r\nconst fs_1 = __importDefault(__webpack_require__(/*! fs */ \"fs\"));\r\nclass CsvFileReader {\r\n    constructor(fileName) {\r\n        this.fileName = fileName;\r\n        this.data = [];\r\n    }\r\n    read() {\r\n        this.data = fs_1.default.readFileSync(this.fileName, {\r\n            encoding: 'utf8'\r\n        })\r\n            .split('\\n')\r\n            .map((row) => {\r\n            return row.split(',');\r\n        }).map((row) => {\r\n            return [\r\n                utils_1.dateStringToDate(row[0]),\r\n                row[1],\r\n                row[2],\r\n                parseInt(row[3]),\r\n                parseInt(row[4]),\r\n                row[5],\r\n                row[6]\r\n            ];\r\n        });\r\n    }\r\n}\r\nexports.CsvFileReader = CsvFileReader;\r\n\n\n//# sourceURL=webpack:///./stats/src/CsvFileReader.ts?");
+eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst fs_1 = __importDefault(__webpack_require__(/*! fs */ \"fs\"));\r\nclass CsvFileReader {\r\n    constructor(fileName) {\r\n        this.fileName = fileName;\r\n        this.data = [];\r\n    }\r\n    read() {\r\n        this.data = fs_1.default.readFileSync(this.fileName, {\r\n            encoding: 'utf8'\r\n        }).split('\\n').map((row) => {\r\n            return row.split(',');\r\n        });\r\n    }\r\n}\r\nexports.CsvFileReader = CsvFileReader;\r\n\n\n//# sourceURL=webpack:///./stats/src/CsvFileReader.ts?");
+
+/***/ }),
+
+/***/ "./stats/src/MatchReader.ts":
+/*!**********************************!*\
+  !*** ./stats/src/MatchReader.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst utils_1 = __webpack_require__(/*! ./utils */ \"./stats/src/utils.ts\");\r\nconst CsvFileReader_1 = __webpack_require__(/*! ./CsvFileReader */ \"./stats/src/CsvFileReader.ts\");\r\nclass MatchReader {\r\n    constructor(reader) {\r\n        this.reader = reader;\r\n        this.matches = [];\r\n    }\r\n    static fromCsv(filename) {\r\n        return new MatchReader(new CsvFileReader_1.CsvFileReader(filename));\r\n    }\r\n    load() {\r\n        this.reader.read();\r\n        this.matches = this.reader.data.map((row) => {\r\n            return [\r\n                utils_1.dateStringToDate(row[0]),\r\n                row[1],\r\n                row[2],\r\n                parseInt(row[3]),\r\n                parseInt(row[4]),\r\n                row[5],\r\n                row[6]\r\n            ];\r\n        });\r\n    }\r\n}\r\nexports.MatchReader = MatchReader;\r\n\n\n//# sourceURL=webpack:///./stats/src/MatchReader.ts?");
 
 /***/ }),
 
@@ -110,6 +122,30 @@ eval("\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nva
 
 /***/ }),
 
+/***/ "./stats/src/SummaryReporter.ts":
+/*!**************************************!*\
+  !*** ./stats/src/SummaryReporter.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst WinsAnalysis_1 = __webpack_require__(/*! ./analyzers/WinsAnalysis */ \"./stats/src/analyzers/WinsAnalysis.ts\");\r\nconst HtmlReport_1 = __webpack_require__(/*! ./reportTargest/HtmlReport */ \"./stats/src/reportTargest/HtmlReport.ts\");\r\nclass SummaryReporter {\r\n    constructor(analyzer, outputTarget) {\r\n        this.analyzer = analyzer;\r\n        this.outputTarget = outputTarget;\r\n    }\r\n    static winsAnalysisWithHtmlReport(team) {\r\n        return new SummaryReporter(new WinsAnalysis_1.WinsAnalysis(team), new HtmlReport_1.HtmlReport());\r\n    }\r\n    buildAndPrintReport(matches) {\r\n        const output = this.analyzer.run(matches);\r\n        this.outputTarget.print(output);\r\n    }\r\n}\r\nexports.SummaryReporter = SummaryReporter;\r\n\n\n//# sourceURL=webpack:///./stats/src/SummaryReporter.ts?");
+
+/***/ }),
+
+/***/ "./stats/src/analyzers/WinsAnalysis.ts":
+/*!*********************************************!*\
+  !*** ./stats/src/analyzers/WinsAnalysis.ts ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst MatchResult_1 = __webpack_require__(/*! ../MatchResult */ \"./stats/src/MatchResult.ts\");\r\nclass WinsAnalysis {\r\n    constructor(team) {\r\n        this.team = team;\r\n    }\r\n    run(matches) {\r\n        let wins = 0;\r\n        for (const match of matches) {\r\n            if (match[1] === this.team && match[5] === MatchResult_1.MatchResult.HomeWin) {\r\n                wins++;\r\n            }\r\n            else {\r\n                if (match[2] === this.team && match[5] === MatchResult_1.MatchResult.AwayWin) {\r\n                    wins++;\r\n                }\r\n            }\r\n        }\r\n        return `Team ${this.team} won ${wins} games`;\r\n    }\r\n}\r\nexports.WinsAnalysis = WinsAnalysis;\r\n\n\n//# sourceURL=webpack:///./stats/src/analyzers/WinsAnalysis.ts?");
+
+/***/ }),
+
 /***/ "./stats/src/index.ts":
 /*!****************************!*\
   !*** ./stats/src/index.ts ***!
@@ -118,7 +154,19 @@ eval("\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nva
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst CsvFileReader_1 = __webpack_require__(/*! ./CsvFileReader */ \"./stats/src/CsvFileReader.ts\");\r\nconst path_1 = __importDefault(__webpack_require__(/*! path */ \"path\"));\r\nconst MatchResult_1 = __webpack_require__(/*! ./MatchResult */ \"./stats/src/MatchResult.ts\");\r\nconst fileName = path_1.default.resolve(__dirname, '..', 'football.csv');\r\nconst reader = new CsvFileReader_1.CsvFileReader(fileName);\r\nreader.read();\r\nlet manUnitedWins = 0;\r\nfor (const match of reader.data) {\r\n    if (match[1] === 'Man United' && match[5] === MatchResult_1.MatchResult.HomeWin) {\r\n        manUnitedWins++;\r\n    }\r\n    else {\r\n        if (match[2] === 'Man United' && match[5] === MatchResult_1.MatchResult.AwayWin) {\r\n            manUnitedWins++;\r\n        }\r\n    }\r\n}\r\nconsole.log(`Man United won ${manUnitedWins} games`);\r\n\n\n//# sourceURL=webpack:///./stats/src/index.ts?");
+eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst path_1 = __importDefault(__webpack_require__(/*! path */ \"path\"));\r\nconst SummaryReporter_1 = __webpack_require__(/*! ./SummaryReporter */ \"./stats/src/SummaryReporter.ts\");\r\nconst MatchReader_1 = __webpack_require__(/*! ./MatchReader */ \"./stats/src/MatchReader.ts\");\r\nconst fileName = path_1.default.resolve(__dirname, '..', 'football.csv');\r\nconst matchReader = MatchReader_1.MatchReader.fromCsv(fileName);\r\nconst summaryMan = SummaryReporter_1.SummaryReporter.winsAnalysisWithHtmlReport('West Ham');\r\nmatchReader.load();\r\nsummaryMan.buildAndPrintReport(matchReader.matches);\r\n\n\n//# sourceURL=webpack:///./stats/src/index.ts?");
+
+/***/ }),
+
+/***/ "./stats/src/reportTargest/HtmlReport.ts":
+/*!***********************************************!*\
+  !*** ./stats/src/reportTargest/HtmlReport.ts ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\r\nvar __importDefault = (this && this.__importDefault) || function (mod) {\r\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\r\n};\r\nObject.defineProperty(exports, \"__esModule\", { value: true });\r\nconst fs_1 = __importDefault(__webpack_require__(/*! fs */ \"fs\"));\r\nclass HtmlReport {\r\n    print(report) {\r\n        const html = `<div>\r\n                        <h1>Analysis Output</h1>\r\n                        <div>${report}</div>\r\n                      </div>`;\r\n        fs_1.default.writeFileSync('report.html', html);\r\n    }\r\n}\r\nexports.HtmlReport = HtmlReport;\r\n\n\n//# sourceURL=webpack:///./stats/src/reportTargest/HtmlReport.ts?");
 
 /***/ }),
 
