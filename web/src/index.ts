@@ -1,7 +1,10 @@
 import {User} from "./models/User";
+import {UserList} from "./views/UserList";
 
-const collection = User.buildUserCollection();
+const users = User.buildUserCollection();
 
-collection.on('change', () => console.log(collection));
-
-collection.fetch();
+users.on('change', () => {
+    const root = document.getElementById('root');
+    new UserList(root, users).render();
+});
+users.fetch();

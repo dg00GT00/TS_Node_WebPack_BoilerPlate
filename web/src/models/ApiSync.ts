@@ -1,7 +1,7 @@
 import axios, {AxiosPromise} from "axios";
 
 interface IHasId {
-    id: number;
+    id?: number;
 }
 
 export class ApiSync<T extends IHasId> {

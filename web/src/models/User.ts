@@ -6,17 +6,17 @@ import {Collection} from "./Collection";
 
 
 export interface IUserProps {
-    name: string;
-    age: number;
-    id: number;
+    name?: string;
+    age?: number;
+    id?: number;
 }
 
 const rootUrl = 'http://localhost:3000/users';
 
-export class User extends Model<Partial<IUserProps>> {
-    static buildUser(attrs: Partial<IUserProps>): User {
+export class User extends Model<IUserProps> {
+    static buildUser(attrs: IUserProps): User {
         return new User(
-            new Attributes<Partial<IUserProps>>(attrs),
+            new Attributes<IUserProps>(attrs),
             new Eventing(),
             new ApiSync<IUserProps>(rootUrl)
         )
@@ -26,6 +26,11 @@ export class User extends Model<Partial<IUserProps>> {
         return new Collection<User, IUserProps>(
             rootUrl,
             (json: IUserProps) => User.buildUser(json));
+    }
+
+    setRandomAge(): void {
+        const age = Math.round((Math.random() * 1000));
+        this.set({age})
     }
 
 }

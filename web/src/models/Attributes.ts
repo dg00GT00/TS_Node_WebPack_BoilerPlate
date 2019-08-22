@@ -7,11 +7,7 @@ export class Attributes<T> {
     };
 
     set(update: T): void {
-        for (const prop in update) {
-            if ((update as Object).hasOwnProperty(prop)) {
-                (this.data as T)[prop] = update[prop]
-            }
-        }
+        Object.assign(this.data, update)
     }
     getAll(): T {
         return this.data;
