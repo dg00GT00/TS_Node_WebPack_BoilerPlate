@@ -4,14 +4,16 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 // @ts-ignore
 import NodemonPlugin from 'nodemon-webpack-plugin';
+import WebpackNodeExternals = require("webpack-node-externals");
 
-const relFolder = 'web';
+const relFolder = 'server';
 
 const config: webpack.Configuration = {
     context: process.cwd(), // to automatically find tsconfig.json
     mode: "development",
+    target: "node",
     watch: true,
-    target: "web",
+    externals: [WebpackNodeExternals()],
     watchOptions: {
         poll: 500,
         ignored: /node_modules/,
@@ -20,10 +22,10 @@ const config: webpack.Configuration = {
         __dirname: false,
         __filename: false,
     },
-    entry: {main: `./${relFolder}/src/index.ts`},
+    entry: {main: [`./${relFolder}/src/index.ts`]},
     output: {
         path: path.resolve(__dirname, `${relFolder}/build`),
-        filename: "[name].js"
+        filename: "[name].js",
     },
     module: {
         rules: [
@@ -43,22 +45,24 @@ const config: webpack.Configuration = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js']
     },
-    devServer: {
-        contentBase: path.resolve(__dirname, `${relFolder}/build`),
-        watchContentBase: true,
-    },
+    // devServer: {
+    //     contentBase: path.resolve(__dirname, `${relFolder}/build`),
+    //     watchContentBase: true,
+    //     port: 3000
+    // },
     plugins: [
         new ForkTsCheckerWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            title: 'Web Framework',
-            template: path.resolve(__dirname, `${relFolder}/src/assets/index.html`)
-        }),
-        // new NodemonPlugin({
-        //     verbose: false,
-        //     ignore: ["node_modules/**/node_modules"],
-        //     delay: 1500,
-        //     watch: [path.resolve(__dirname, `${relFolder}/build/*.js`)],
-        // })
+        // new webpack.HotModuleReplacementPlugin(),
+        // new HtmlWebpackPlugin({
+        //     title: 'Express App',
+        //     template: path.resolve(__dirname, `${relFolder}/src/assets/index.html`)
+        // }),
+        new NodemonPlugin({
+            verbose: false,
+            ignore: ["node_modules/**/node_modules"],
+            delay: 1500,
+            watch: [path.resolve(__dirname, `${relFolder}/build/*.js`)],
+        })
     ]
 };
 
